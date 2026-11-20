@@ -1,0 +1,33 @@
+-- -- 9. (3 pts) Une startup lance une application de covoiturage temps réel
+-- -- nécessitant : (a) le suivi GPS toutes les 3 secondes de 30 000 véhicules, (b) la
+-- -- facturation bancaire des trajets, (c) la suggestion d'itinéraires/amis communs
+-- -- à 3 degrés de séparation.
+-- -- Proposez une architecture polyglotte justifiée via CAP/PACELC et les 4
+-- -- critères de choix.
+
+-- (a) Suivi GPS toutes les 3 secondes de 30 000 véhicules
+-- -> Moteur choisi : Apache Cassandra
+-- -> CAP / PACELC : AP et PA / EL.
+-- -> Les 4 critères :
+--    1. Cohérence : Un léger décalage de 1-2 secondes sur la carte (cohérence éventuelle) est acceptable.
+--    2. Scalabilité : Flux massif de 10 000 écritures/s en continu -> sharding horizontal et écriture append-only (LSM-Tree).
+--    3. Structure : Série temporelle / télémétrie (Partition Key = vehicule_id + jour, Clustering Key = timestamp).
+--    4. Nature des accès : Écritures massives en continu et lecture chronologique des dernières positions d'un véhicule.
+
+-- (b) Facturation bancaire des trajets
+-- -> Moteur choisi : PostgreSQL
+-- -> CAP / PACELC : CP et PC / EC.
+-- -> Les 4 critères :
+--    1. Cohérence : Zéro erreur tolérée sur l'argent et les paiements -> transactions ACID obligatoires.
+--    2. Scalabilité : Volume modéré (1 paiement en fin de trajet) -> montée en charge verticale + réplicas lecture.
+--    3. Structure : Schéma relationnel fixe et stable (clients, trajets, factures, paiements) avec PK/FK.
+--    4. Nature des accès : Transactions financières sécurisées et requêtes analytiques / comptables (JOIN, GROUP BY).
+
+-- (c) Suggestion d'itinéraires/amis communs à 3 degrés de séparation
+-- -> Moteur choisi : Neo4j
+-- -> CAP / PACELC : CP et PC / EC (cohérence du réseau de relations).
+-- -> Les 4 critères :
+--    1. Cohérence : Liens fiables entre utilisateurs, amis et trajets pour des recommandations exactes.
+--    2. Scalabilité : Temps de parcours proportionnel au voisinage exploré, indépendant de la taille totale de la base.
+--    3. Structure : Réseau relationnel profond composé de Nœuds (Utilisateurs, Trajets) et de Relations typées (AMI_AVEC, EMPRUNTE).
+--    4. Nature des accès : Traversée rapide à 3 sauts grâce à l'Index-Free Adjacency, évitant des auto-jointures SQL très lentes.
