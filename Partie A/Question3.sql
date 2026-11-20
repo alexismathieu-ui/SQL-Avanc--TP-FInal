@@ -4,10 +4,14 @@
 -- obsolète (stale), puis rafraîchissez-la et vérifiez la mise à jour.
 
 
+-- Eviter l'erreur "Table 'mv_synthese_segments' already exists"
+DROP TABLE IF EXISTS mv_synthese_segments;
+
+
 CREATE TABLE mv_synthese_segments AS
 SELECT c.segment, COUNT(cmd.id) AS nb_commandes, ROUND(SUM(cmd.montant_total), 2) AS ca_total
 FROM clients c
-INNER JOIN commandes cmd ON cmd.client_id = c.id
+JOIN commandes cmd ON cmd.client_id = c.id
 GROUP BY c.segment;
 
 INSERT INTO commandes (client_id, date_commande, montant_total, statut)

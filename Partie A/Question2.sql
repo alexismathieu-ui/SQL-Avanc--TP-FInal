@@ -1,6 +1,7 @@
 -- 2. (2.5 pts) Créez un index pertinent sur commandes, activez le
 -- partitionnement RANGE, et réécrivez la requête de façon SARGable (sans
 -- SELECT *).
+-- Comparez le coût total avant/après et expliquez l'effet du Partition Pruning
 
 DROP INDEX idx_commandes_statut_date ON commandes;
 
@@ -24,3 +25,8 @@ WHERE statut = 'LIVREE'
     AND date_commande >= '2026-01-01' AND date_commande < '2027-01-01'
 ORDER BY montant_total DESC
 LIMIT 10;
+
+-- Comparaison avant/après et effet du Partition Pruning :
+-- Avant : MySQL lit toute la table à cause de YEAR et SELECT * se qui fait coût élevé à cause Seq Scan.
+-- Après : Avec l'index composite et la requête façon SARGables, le coût chute fortement.
+-- Partition Pruning : MySQL ignore automatiquement la partition p2024 et p2025 et ne lit que la partition p2026
