@@ -3,7 +3,7 @@
 -- correction fiable face aux valeurs NULL.
 
 -- Explication :
--- La requête du SELECT contient NULL car la valeur manager_id de Claire est NULL,
+-- La requête du SELECT contient NULL car la valeur manager_id  est NULL,
 -- donc comparer un id avec NULL donne toujours "UNKNOWN" donc un FALSE et comme WHERE ne 
 -- garde que ce qui est VRAI, la requête rejette tout et renvoie 0 ligne.
 

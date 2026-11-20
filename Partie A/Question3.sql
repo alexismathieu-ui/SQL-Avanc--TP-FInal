@@ -5,7 +5,7 @@
 
 
 -- Eviter l'erreur "Table 'mv_synthese_segments' already exists"
-DROP TABLE IF EXISTS mv_synthese_segments;
+--DROP TABLE IF EXISTS mv_synthese_segments;
 
 
 CREATE TABLE mv_synthese_segments AS
